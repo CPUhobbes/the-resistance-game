@@ -16,7 +16,7 @@ module.exports = {
         loader: 'babel-loader',
         query: {
           // These are the specific transformations we'll be using.
-          presets: ['react', 'es2015', 'flow', 'stage-0'],
+          presets: ['react', 'es2017', 'flow', 'stage-0'],
           retainLines: true,
         },
       },

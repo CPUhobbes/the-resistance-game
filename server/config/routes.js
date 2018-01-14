@@ -1,18 +1,22 @@
 const express = require('express');
 const Index = require('../controllers/');
-const Players = require('../controllers/players/');
+const Game = require('../controllers/game/');
+const Util = require('../util/');
 
 const Router = express.Router();
-/*
+
+module.exports = (io) => {
+  /*
  * --- Index Route ---
  */
-Router.get('/', Index.loadIndex);
-
-/*
+  Router.get('/', Index.loadIndex);
+  /*
  * --- API Routes ---
  */
 
-// Get all Players
-Router.get('/player/:playerID', Players.getAllPlayers);
+  // Generate New GameName
+  Router.get('/game/newGameName', (req, res) =>
+    Game.createNewGameName(req, res, io));
 
-module.exports = Router;
+  return Router;
+};

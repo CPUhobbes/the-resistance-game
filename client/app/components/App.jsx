@@ -14,9 +14,13 @@ class App extends React.Component {
     loadAPI();
   }
   render() {
+    const { socketio } = this.props;
     return (
       <div className="container-fluid">
-        <Header />
+        <Header
+          userId={socketio.get('userId')}
+          numUsers={socketio.get('numUsers')}
+        />
       </div>
     );
   }
@@ -27,6 +31,7 @@ const mapStateToProps = (state, ownProps) => ({
   // OwnProps is the props passed to the current component <Home success=true />
   // Can be used to check ie, stillSuccess: ownProps.success === state.success
   settings: state.settings,
+  socketio: state.socketio,
 });
 
 // Maps actions to props

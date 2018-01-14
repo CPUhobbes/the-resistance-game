@@ -2,14 +2,26 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
+import * as bootstrap from 'react-bootstrap';
 import * as actions from '../../actions/actions';
 import * as socketActions from '../../actions/socketActions';
+import helpers from '../../helpers/helpers';
+
+const {
+  Button,
+  Modal,
+  FormGroup,
+  ControlLabel,
+  FormControl,
+  HelpBlock,
+} = bootstrap;
 
 class Home extends React.Component {
   static propTypes = {
     settings: PropTypes.instanceOf(Immutable.Iterable).isRequired,
     socketio: PropTypes.instanceOf(Immutable.Iterable).isRequired,
     updateLocation: PropTypes.func.isRequired,
+    addUser: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -17,6 +29,11 @@ class Home extends React.Component {
 
     this.state = {
       userName: `USER-${Math.round(Math.random() * 10000000)}`,
+      showJoinGameModal: false,
+      showCreateGameModal: false,
+      modalNameInput: '',
+      modalPassInput: '',
+      newGameName: '',
     };
   }
 
@@ -26,9 +43,112 @@ class Home extends React.Component {
     addUser(this.state.userName);
   }
 
+  onJoinGame = () => {};
+  onCreateGame = () => {};
+
+  getValidationState() {
+    const { modalPassInput } = this.state;
+    const passLength = modalPassInput.length;
+
+    if (passLength > 5) return 'success';
+    else if (passLength > 0) return 'error';
+    return null;
+  }
+
+  handleInputChange = (e, inputName) => {
+    this.setState({ [inputName]: e.target.value });
+  };
+
+  toggleJoinGameModal = () => {
+    const { showJoinGameModal } = this.state;
+    this.setState({
+      showJoinGameModal: !showJoinGameModal,
+      modalNameInput: '',
+      modalPassInput: '',
+    });
+  };
+
+  toggleCreateGameModal = async () => {
+    const { showCreateGameModal } = this.state;
+    const newGameName = await helpers.getNewGameName();
+
+    this.setState({
+      showCreateGameModal: !showCreateGameModal,
+      modalPassInput: '',
+      newGameName: newGameName.data,
+    });
+  };
+
+  renderJoinGameModal() {
+    return (
+      <div className="static-modal">
+        <Modal.Dialog>
+          <Modal.Header>
+            <Modal.Title>Join a Game</Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body>One fine body...</Modal.Body>
+
+          <Modal.Footer>
+            <Button onClick={this.toggleJoinGameModal}>Close</Button>
+            <Button onClick={this.onJoinGame} bsStyle="primary">
+              Join Game
+            </Button>
+          </Modal.Footer>
+        </Modal.Dialog>
+      </div>
+    );
+  }
+
+  renderCreateGameModal() {
+    const { newGameName } = this.state;
+
+    return (
+      <div className="static-modal">
+        <Modal.Dialog>
+          <Modal.Header>
+            <Modal.Title>Create a Game</Modal.Title>
+          </Modal.Header>
+
+          <form>
+            <h2 style={{ textTransform: 'capitalize' }}>
+              Game Name: {newGameName}
+            </h2>
+            <FormGroup
+              controlId="formBasicText"
+              validationState={this.getValidationState()}
+            >
+              <ControlLabel>Enter Game Password</ControlLabel>
+              <FormControl
+                type="password"
+                value={this.state.modalPassInput}
+                placeholder="Create Password"
+                onChange={e => this.handleInputChange(e, 'modalPassInput')}
+              />
+              <FormControl.Feedback />
+              <HelpBlock>Password must be at least 6 characters long</HelpBlock>
+            </FormGroup>
+          </form>
+
+          <Modal.Footer>
+            <Button onClick={this.toggleCreateGameModal}>Close</Button>
+            <Button onClick={this.onCreateGame} bsStyle="primary">
+              Join Game
+            </Button>
+          </Modal.Footer>
+        </Modal.Dialog>
+      </div>
+    );
+  }
+
   render() {
     const { settings, socketio } = this.props;
-    const { userName } = this.state;
+    const { userName, showJoinGameModal, showCreateGameModal } = this.state;
+    const joinGameModal = showJoinGameModal ? this.renderJoinGameModal() : null;
+    const createGameModal = showCreateGameModal
+      ? this.renderCreateGameModal()
+      : null;
+
     if (settings) {
       // console.log(settings.toJS());
     }
@@ -44,7 +164,10 @@ class Home extends React.Component {
     return (
       <div>
         <div>HOME</div>
-        <div>{userName}</div>
+        <Button onClick={this.toggleCreateGameModal}>Create a Game</Button>
+        <Button onClick={this.toggleJoinGameModal}>Join a Game</Button>
+        {joinGameModal}
+        {createGameModal}
       </div>
     );
   }

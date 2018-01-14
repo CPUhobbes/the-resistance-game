@@ -31,7 +31,7 @@ class Child extends React.Component {
     return (
       <div>
         <div>CHILD COMPONENT</div>
-        <div>Current ID - {id}</div>
+        <div>Current ID -</div>
       </div>
     );
   }

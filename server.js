@@ -42,7 +42,7 @@ app.use(BodyParser.urlencoded({ extended: false }));
 app.use(express.static(Path.join(__dirname, 'client', 'public')));
 
 // Routes
-app.use('/', Routes);
+app.use('/', Routes(io));
 
 // Server listen
 http.listen(process.env.PORT || 3000, () => {
