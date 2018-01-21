@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import App from './../components/App';
 import Home from './../components/home/Home';
 import Child from './../components/child/Child';
+// import GameRoom from './../components/gameRoom/GameRoom';
 
 const Root = ({ store }) => (
   <Provider store={store}>

@@ -22,6 +22,7 @@ class Home extends React.Component {
     socketio: PropTypes.instanceOf(Immutable.Iterable).isRequired,
     updateLocation: PropTypes.func.isRequired,
     addUser: PropTypes.func.isRequired,
+    createGame: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -44,7 +45,12 @@ class Home extends React.Component {
   }
 
   onJoinGame = () => {};
-  onCreateGame = () => {};
+  onCreateGame = () => {
+    const { createGame } = this.props;
+    const { newGameName, modalPassInput } = this.state;
+
+    createGame(newGameName, modalPassInput);
+  };
 
   getValidationState() {
     const { modalPassInput } = this.state;
@@ -150,22 +156,23 @@ class Home extends React.Component {
       : null;
 
     if (settings) {
-      // console.log(settings.toJS());
+      // console.log(settings);
     }
+
     if (socketio) {
       const newUserName = socketio.get('newUserName');
       if (newUserName && newUserName !== userName) {
         console.log(newUserName, userName);
         console.log(`${newUserName} Has Joined!`);
       }
-      // console.log(socketio.toJS());
+      console.log(socketio.get('message'));
     }
-
     return (
       <div>
         <div>HOME</div>
         <Button onClick={this.toggleCreateGameModal}>Create a Game</Button>
         <Button onClick={this.toggleJoinGameModal}>Join a Game</Button>
+        {socketio.get('message')}
         {joinGameModal}
         {createGameModal}
       </div>
@@ -180,6 +187,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   updateLocation: () => dispatch(actions.updateLocation('HOME')),
+  createGame: (gameName, password) =>
+    dispatch(socketActions.createGame(gameName, password)),
   addUser: userName => dispatch(socketActions.addUser(userName)),
 });
 

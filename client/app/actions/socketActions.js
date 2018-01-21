@@ -19,3 +19,14 @@ export function sendChoice(choice) {
     },
   };
 }
+
+export function createGame(gameName, password) {
+  const game = { [gameName]: password };
+  return {
+    type: Types.CREATE_GAME,
+    meta: {
+      channel: 'CREATE_GAME',
+      data: game,
+    },
+  };
+}

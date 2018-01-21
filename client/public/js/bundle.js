@@ -37635,6 +37635,7 @@ module.exports = camelize;
 
 
 
+// import GameRoom from './../components/gameRoom/GameRoom';
 
 const Root = ({ store }) =>
 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_redux__["a" /* Provider */], { store: store },
@@ -43385,6 +43386,7 @@ class Home extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 
 
 
+
   constructor(props) {var _this;
     _this = super(props);this.
 
@@ -43405,7 +43407,12 @@ class Home extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
 
 
     onJoinGame = () => {};this.
-    onCreateGame = () => {};this.
+    onCreateGame = () => {
+      const { createGame } = this.props;
+      const { newGameName, modalPassInput } = this.state;
+
+      createGame(newGameName, modalPassInput);
+    };this.
 
 
 
@@ -43511,27 +43518,28 @@ class Home extends __WEBPACK_IMPORTED_MODULE_0_react___default.a.Component {
     null;
 
     if (settings) {
-      // console.log(settings.toJS());
+      // console.log(settings);
     }
+
     if (socketio) {
       const newUserName = socketio.get('newUserName');
       if (newUserName && newUserName !== userName) {
         console.log(newUserName, userName);
         console.log(`${newUserName} Has Joined!`);
       }
-      // console.log(socketio.toJS());
+      console.log(socketio.get('message'));
     }
-
     return (
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', null,
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', null, 'HOME'),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Button, { onClick: this.toggleCreateGameModal }, 'Create a Game'),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Button, { onClick: this.toggleJoinGameModal }, 'Join a Game'),
+        socketio.get('message'),
         joinGameModal,
         createGameModal));
 
 
-  }}Home.propTypes = { settings: __WEBPACK_IMPORTED_MODULE_2_prop_types___default.a.instanceOf(__WEBPACK_IMPORTED_MODULE_3_immutable___default.a.Iterable).isRequired, socketio: __WEBPACK_IMPORTED_MODULE_2_prop_types___default.a.instanceOf(__WEBPACK_IMPORTED_MODULE_3_immutable___default.a.Iterable).isRequired, updateLocation: __WEBPACK_IMPORTED_MODULE_2_prop_types___default.a.func.isRequired, addUser: __WEBPACK_IMPORTED_MODULE_2_prop_types___default.a.func.isRequired };
+  }}Home.propTypes = { settings: __WEBPACK_IMPORTED_MODULE_2_prop_types___default.a.instanceOf(__WEBPACK_IMPORTED_MODULE_3_immutable___default.a.Iterable).isRequired, socketio: __WEBPACK_IMPORTED_MODULE_2_prop_types___default.a.instanceOf(__WEBPACK_IMPORTED_MODULE_3_immutable___default.a.Iterable).isRequired, updateLocation: __WEBPACK_IMPORTED_MODULE_2_prop_types___default.a.func.isRequired, addUser: __WEBPACK_IMPORTED_MODULE_2_prop_types___default.a.func.isRequired, createGame: __WEBPACK_IMPORTED_MODULE_2_prop_types___default.a.func.isRequired };
 
 
 const mapStateToProps = state => ({
@@ -43541,6 +43549,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   updateLocation: () => dispatch(__WEBPACK_IMPORTED_MODULE_5__actions_actions__["b" /* updateLocation */]('HOME')),
+  createGame: (gameName, password) =>
+  dispatch(__WEBPACK_IMPORTED_MODULE_6__actions_socketActions__["b" /* createGame */](gameName, password)),
   addUser: userName => dispatch(__WEBPACK_IMPORTED_MODULE_6__actions_socketActions__["a" /* addUser */](userName)) });
 
 
@@ -55294,6 +55304,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = addUser;
 /* unused harmony export sendChoice */
+/* harmony export (immutable) */ __webpack_exports__["b"] = createGame;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__socketActionTypes__ = __webpack_require__(433);
 
 
@@ -55317,6 +55328,17 @@ function sendChoice(choice) {
 
 }
 
+function createGame(gameName, password) {
+  const game = { [gameName]: password };
+  return {
+    type: __WEBPACK_IMPORTED_MODULE_0__socketActionTypes__["a" /* default */].CREATE_GAME,
+    meta: {
+      channel: 'CREATE_GAME',
+      data: game } };
+
+
+}
+
 /***/ }),
 /* 433 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -55324,7 +55346,8 @@ function sendChoice(choice) {
 "use strict";
 const actions = {
   ADD_USER: 'ADD_USER',
-  SEND_CHOICE: 'SEND_CHOICE' };
+  SEND_CHOICE: 'SEND_CHOICE',
+  CREATE_GAME: 'CREATE_GAME' };
 
 
 /* harmony default export */ __webpack_exports__["a"] = (actions);
@@ -58531,6 +58554,11 @@ const initialSettings = Object(__WEBPACK_IMPORTED_MODULE_0_immutable__["Map"])({
       return state.setIn(['newUserName'], action.data);
     case 'USER_ID':
       return state.setIn(['userId'], action.data);
+    case 'GAME_LIST':
+      return state.mergeIn(['gameList'], action.data);
+    case 'MESSAGE':
+      console.log(action.data);
+      return state.setIn(['message'], action.data);
     default:
       return state;}
 

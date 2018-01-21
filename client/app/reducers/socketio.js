@@ -12,6 +12,11 @@ export default function (state = initialSettings, action) {
       return state.setIn(['newUserName'], action.data);
     case 'USER_ID':
       return state.setIn(['userId'], action.data);
+    case 'GAME_LIST':
+      return state.mergeIn(['gameList'], action.data);
+    case 'MESSAGE':
+      console.log(action.data);
+      return state.setIn(['message'], action.data);
     default:
       return state;
   }

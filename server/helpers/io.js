@@ -10,10 +10,15 @@ const ioSocket = (io) => {
       type: 'CONNECTED_USERS',
       data: Object.keys(io.sockets.sockets).length,
     });
-
+    console.log(io.sockets.adapter.rooms); // Show room list
     client.emit('action', {
       type: 'USER_ID',
       data: client.id,
+    });
+
+    io.sockets.in('knowledgeable art').emit('action', {
+      type: 'MESSAGE',
+      data: 'TESTING 123 MESSAGE',
     });
 
     client.on('disconnect', () => {
@@ -37,6 +42,15 @@ const ioSocket = (io) => {
               type: 'NEW_USER_NAME',
               data,
             });
+            break;
+          }
+          case 'CREATE_GAME': {
+            const roomName = Object.keys(data)[0];
+            io.emit('action', {
+              type: 'GAME_LIST',
+              data,
+            });
+            client.join('knowledgeable art'); // roomName
             break;
           }
           default:
